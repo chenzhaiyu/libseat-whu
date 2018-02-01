@@ -27,6 +27,8 @@ def get_time(flag="tomorrow"):
     if flag == "tomorrow":
         delta = datetime.timedelta(days=1)
         date = localtime + delta
+    if flag == "today":
+        date = localtime
 
     return date.strftime('%Y-%m-%d')
 
@@ -100,7 +102,7 @@ if __name__ == '__main__':
     index = 0
     while index < len(conf["seats"]):
         status = post_data(token, conf, index)
-        seat_index = index + 1
+        index = index + 1
         time.sleep(random.uniform(0.1, 0.4))
         if status == "success":
             print "\n-------------Yeah! it's done!-------------\n"
