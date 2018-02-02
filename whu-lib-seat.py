@@ -15,13 +15,13 @@ import datetime
 
 def load_conf():
     """load from conf.json"""
-    with open("conf.json", 'r') as f:
+    with open("conf-me.json", 'r') as f:
         conf = json.loads(f.read())
         # print conf
         return conf
 
 
-def get_time(flag="tomorrow"):
+def get_date(flag="tomorrow"):
     """add 1 day to the localtime, by default"""
     localtime = datetime.datetime.now()
     if flag == "tomorrow":
@@ -70,7 +70,7 @@ def post_data(token, conf, index):
     token_pure = token
     startTime = conf["startTime"]
     endTIme = conf["endTime"]
-    date = get_time(conf["date_flag"])
+    date = get_date(conf["date_flag"])
     seats = conf["seats"]
     seat = seats[index]
     # parameters above
@@ -95,9 +95,32 @@ def post_data(token, conf, index):
     return status
 
 
+def schedule_run(conf):
+    """schedule run, according to time set in conf.json"""
+    schedule_flag = conf["schedule_flag"]
+    schedule_time = conf["schedule_time"]
+    if schedule_flag == "0":
+        pass
+
+    while schedule_flag == "1":
+        print "------------suspending------------"
+        # 检查当前时刻
+        hour_now = datetime.datetime.now().hour
+        minute_now = datetime.datetime.now().minute
+        second_now = datetime.datetime.now().second
+        if hour_now >= int(schedule_time[0]) and minute_now >= int(schedule_time[1]) and second_now >= int(schedule_time[2]):
+            break
+        # 当在设定时间前1小时前区间，休眠1h/次
+        elif hour_now < int(schedule_time[0]) - 1:
+            time.sleep(3600)
+            if minute_now < int(schedule_time[1] - 1):
+                time.sleep(60)
+
+
 if __name__ == '__main__':
 
     conf = load_conf()
+    schedule_run(conf)
     token = get_token()
     index = 0
     while index < len(conf["seats"]):
