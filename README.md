@@ -33,7 +33,7 @@
   "mail_password": 发件邮箱密码,
   "mail_address_to": 收件邮箱,
   "mail_smtp_server": 发件邮箱smtp服务器地址，
-
+  "test": "test"，
 }
 ```
 &nbsp;

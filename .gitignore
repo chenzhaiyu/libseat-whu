@@ -27,3 +27,5 @@ README.html
 .old/get-time.py
 .old/post-data.py
 send-mail.py
+*.json
+.old/post-data.py
