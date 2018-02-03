@@ -21,7 +21,7 @@ import smtplib
 def load_conf():
     """导入config.json中的参数"""
 
-    with open(".config.json", 'r') as f:
+    with open("_config.json", 'r') as f:
         conf = json.loads(f.read())
         # print conf
         return conf
@@ -129,9 +129,9 @@ def schedule_run():
         # 当在设定时间前1小时前区间，休眠1h/次
         elif hour_now < int(schedule_time[0]) - 1:
             time.sleep(3600)
-            # 当在设定时间前1小时内区间，休眠1min/次
-            if minute_now < int(schedule_time[1] - 1):
-                time.sleep(60)
+        # 当在设定时间前1小时内区间，休眠1min/次
+        elif minute_now < int(schedule_time[1]) - 1:
+            time.sleep(60)
 
 
 def _format_address(s):
@@ -157,7 +157,7 @@ def send_mail(response):
 
         text = "local time: {time_val}\nlogs: {log_val}".format(time_val=str(time.asctime()), log_val=str(response))
         msg = MIMEText(text, 'plain', 'utf-8')
-        msg['From'] = _format_address(u'nobody <%s>' % address_from)
+        msg['From'] = _format_address(u'localhost <%s>' % address_from)
         msg['To'] = _format_address(u'anybody <%s>' % address_to)
         msg['Subject'] = Header(u'每日图书饭日志', 'utf-8').encode()
 

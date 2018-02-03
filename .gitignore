@@ -29,3 +29,4 @@ README.html
 send-mail.py
 *.json
 .old/post-data.py
+functions.py
