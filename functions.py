@@ -6,6 +6,11 @@ import random
 import json
 import time
 import datetime
+from email.header import Header
+from email.mime.text import MIMEText
+from email.utils import parseaddr, formataddr
+import smtplib
+
 
 # @ whu图书馆座位预约程序
 # @ author:  czy
@@ -14,15 +19,17 @@ import datetime
 
 
 def load_conf():
-    """load from conf.json"""
-    with open("conf-me.json", 'r') as f:
+    """导入config.json中的参数"""
+
+    with open(".config.json", 'r') as f:
         conf = json.loads(f.read())
         # print conf
         return conf
 
 
 def get_date(flag="tomorrow"):
-    """add 1 day to the localtime, by default"""
+    """获取当前日期，预定次日或今日座位"""
+
     localtime = datetime.datetime.now()
     if flag == "tomorrow":
         delta = datetime.timedelta(days=1)
@@ -34,21 +41,25 @@ def get_date(flag="tomorrow"):
 
 
 def get_token():
-    """get token to authorize login, using method GET"""
+    """获取token值来授权登录, 使用HTTP GET方法"""
+
     # url = "http://seat.lib.whu.edu.cn/rest/auth?username=2015xxxxxxxxx&password=15xxxx"
     url = "http://seat.lib.whu.edu.cn/rest/auth?username=" + str(conf["username"]) + "&" + "password=" + str(
         conf["password"])
     connection = httplib.HTTPConnection("seat.lib.whu.edu.cn")
 
+    # 构造GET阶段的HTTP headers，伪装浏览器访问，防止被403，不过App端好像只使用了keep-alive参数
     headers_to_send = {
-        'Connection': 'keep-alive',
-        # 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+        # 'Connection': 'keep-alive',
+        # 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 '
+        #               'Safari/537.11',
         # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         # 'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
         # 'Accept-Encoding': 'none',
         # 'Accept-Language': 'en-US,en;q=0.8',
         }
 
+    # 使用HTTP GET方法
     request = connection.request(method="GET", url=url, headers=headers_to_send)
     response = connection.getresponse()
     headers_received = response.getheaders()
@@ -62,28 +73,30 @@ def get_token():
     # print token
 
 
-def post_data(token, conf, index):
-    """pick up a seat, by seat number, time, date, using method POST"""
+def post_data(token, index):
+    """预定座位，通过选定座位号/时间/日期等，使用HTTP POST方法"""
+
     url = "http://seat.lib.whu.edu.cn/rest/v2/freeBook"
 
-    # parameters below
+    # POST到服务器的参数如下
     token_pure = token
     startTime = conf["startTime"]
     endTIme = conf["endTime"]
     date = get_date(conf["date_flag"])
     seats = conf["seats"]
     seat = seats[index]
-    # parameters above
 
+    # token_data由纯token值添加起止时间和日期参数构成
     token_data = {"token": token_pure, "startTime": startTime, "endTime": endTIme, "seat": seat, "date": date}
     token = urllib.urlencode(token_data)
     # print "token-to-send: " + token + "\n"
 
     connection = httplib.HTTPConnection("seat.lib.whu.edu.cn")
 
+    # 构造POST阶段的HTTP headers
     headers_to_send = {"Connection": "Keep-alive", "Content-Length": "76",
                        "Content-Type": "application/x-www-form-urlencoded"}
-
+    # 使用HTTP POST方法
     request = connection.request(method="POST", url=url, body=str(token), headers=headers_to_send)
     response = connection.getresponse()
     headers_received = response.getheaders()
@@ -92,16 +105,19 @@ def post_data(token, conf, index):
     print "Headers info(post-data): \n" + str(headers_received) + "\n"
     print "Response info(post-data): \n" + str(response)
     status = json.loads(response)["status"]
-    return status
+    return status, response
 
 
-def schedule_run(conf):
-    """schedule run, according to time set in conf.json"""
+def schedule_run():
+    """定时执行，通过监控当前时间与设定的触发时间比较，实现得很笨拙，在Linux/macOS下能设置定时任务的略过"""
+
     schedule_flag = conf["schedule_flag"]
     schedule_time = conf["schedule_time"]
+    # 非定时执行模式
     if schedule_flag == "0":
         pass
 
+    # 定时执行模式
     while schedule_flag == "1":
         print "------------suspending------------"
         # 检查当前时刻
@@ -113,23 +129,61 @@ def schedule_run(conf):
         # 当在设定时间前1小时前区间，休眠1h/次
         elif hour_now < int(schedule_time[0]) - 1:
             time.sleep(3600)
+            # 当在设定时间前1小时内区间，休眠1min/次
             if minute_now < int(schedule_time[1] - 1):
                 time.sleep(60)
 
 
-if __name__ == '__main__':
+def _format_address(s):
+    """格式化邮件地址"""
 
+    name, address = parseaddr(s)
+    return formataddr((
+        Header(name, 'utf-8').encode(),
+        address.encode('utf-8') if isinstance(address, unicode) else address))
+
+
+def send_mail(response):
+    """用SMTP方式发送日志邮件，告知选座情况"""
+
+    if conf["send_mail_flag"] == "0":
+        pass
+
+    elif conf["send_mail_flag"] == "1":
+        address_from = conf["mail_address_from"]
+        password = conf["mail_password"]
+        address_to = conf["mail_address_to"]
+        smtp_server = conf["mail_smtp_server"]
+
+        text = "local time: {time_val}\nlogs: {log_val}".format(time_val=str(time.asctime()), log_val=str(response))
+        msg = MIMEText(text, 'plain', 'utf-8')
+        msg['From'] = _format_address(u'nobody <%s>' % address_from)
+        msg['To'] = _format_address(u'anybody <%s>' % address_to)
+        msg['Subject'] = Header(u'每日图书饭日志', 'utf-8').encode()
+
+        server = smtplib.SMTP(smtp_server, 25)
+        server.set_debuglevel(1)
+        server.login(address_from, password)
+        server.sendmail(address_from, [address_to], msg.as_string())
+        server.quit()
+
+
+if __name__ == '__main__':
+    """主函数"""
+
+    global response
     conf = load_conf()
-    schedule_run(conf)
+    schedule_run()
     token = get_token()
     index = 0
+
     while index < len(conf["seats"]):
-        status = post_data(token, conf, index)
+        status, response = post_data(token, index)
         index = index + 1
         time.sleep(random.uniform(0.1, 0.4))
         if status == "success":
             print "\n-------------Yeah! it's done!-------------\n"
             break
         else:
-            print "\n--------------Oops! failed!---------------"
-            print "\n"
+            print "\n--------------Oops! failed!---------------\n"
+    send_mail(response)
