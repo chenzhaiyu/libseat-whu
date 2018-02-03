@@ -11,10 +11,8 @@
 &nbsp;
 
 ### 项目文件：
-- `main.py`：`* 主函数 *`
 - `conf.json`：`参数配置`
-- `functions.py`：`函数实现`
-- `gui.py`：`还没有完成的GUI界面`
+- `functions.py`：`选座脚本`
 
 &nbsp;
 
@@ -30,15 +28,13 @@
   "schedule_time": 预约模式时/分/秒设置，
   "seats": 所选座位号，
   "more_seats": 暂未适配，不需要配置，
-  "send_mail_flag": "1"表示启用邮件提醒，"0"为禁用，
+  "send_mail_flag": "1"表示启用邮件提醒，"0"为禁用
   "mail_address_from": 发件邮箱,
   "mail_password": 发件邮箱密码,
   "mail_address_to": 收件邮箱,
   "mail_smtp_server": 发件邮箱smtp服务器地址，
-
+  "test": "test"，
 }
-
-注意：每一处的引号都不要拿掉!
 ```
 &nbsp;
 

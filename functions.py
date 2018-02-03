@@ -18,13 +18,13 @@ import smtplib
 # @ website: http://www.chenzhaiyu.com
 
 
-def load_config():
+def load_conf():
     """导入config.json中的参数"""
 
     with open("_config.json", 'r') as f:
-        config = json.loads(f.read())
-        # print config
-        return config
+        conf = json.loads(f.read())
+        # print conf
+        return conf
 
 
 def get_date(flag="tomorrow"):
@@ -40,12 +40,12 @@ def get_date(flag="tomorrow"):
     return date.strftime('%Y-%m-%d')
 
 
-def get_token(config):
+def get_token():
     """获取token值来授权登录, 使用HTTP GET方法"""
 
     # url = "http://seat.lib.whu.edu.cn/rest/auth?username=2015xxxxxxxxx&password=15xxxx"
-    url = "http://seat.lib.whu.edu.cn/rest/auth?username=" + str(config["username"]) + "&" + "password=" + str(
-        config["password"])
+    url = "http://seat.lib.whu.edu.cn/rest/auth?username=" + str(conf["username"]) + "&" + "password=" + str(
+        conf["password"])
     connection = httplib.HTTPConnection("seat.lib.whu.edu.cn")
 
     # 构造GET阶段的HTTP headers，伪装浏览器访问，防止被403，不过App端好像只使用了keep-alive参数
@@ -73,17 +73,17 @@ def get_token(config):
     # print token
 
 
-def post_data(config, token, index):
+def post_data(token, index):
     """预定座位，通过选定座位号/时间/日期等，使用HTTP POST方法"""
 
     url = "http://seat.lib.whu.edu.cn/rest/v2/freeBook"
 
     # POST到服务器的参数如下
     token_pure = token
-    startTime = config["startTime"]
-    endTIme = config["endTime"]
-    date = get_date(config["date_flag"])
-    seats = config["seats"]
+    startTime = conf["startTime"]
+    endTIme = conf["endTime"]
+    date = get_date(conf["date_flag"])
+    seats = conf["seats"]
     seat = seats[index]
 
     # token_data由纯token值添加起止时间和日期参数构成
@@ -108,11 +108,11 @@ def post_data(config, token, index):
     return status, response
 
 
-def schedule_run(config):
+def schedule_run():
     """定时执行，通过监控当前时间与设定的触发时间比较，实现得很笨拙，在Linux/macOS下能设置定时任务的略过"""
 
-    schedule_flag = config["schedule_flag"]
-    schedule_time = config["schedule_time"]
+    schedule_flag = conf["schedule_flag"]
+    schedule_time = conf["schedule_time"]
     # 非定时执行模式
     if schedule_flag == "0":
         pass
@@ -143,17 +143,17 @@ def _format_address(s):
         address.encode('utf-8') if isinstance(address, unicode) else address))
 
 
-def send_mail(config, response):
+def send_mail(response):
     """用SMTP方式发送日志邮件，告知选座情况"""
 
-    if config["send_mail_flag"] == "0":
+    if conf["send_mail_flag"] == "0":
         pass
 
-    elif config["send_mail_flag"] == "1":
-        address_from = config["mail_address_from"]
-        password = config["mail_password"]
-        address_to = config["mail_address_to"]
-        smtp_server = config["mail_smtp_server"]
+    elif conf["send_mail_flag"] == "1":
+        address_from = conf["mail_address_from"]
+        password = conf["mail_password"]
+        address_to = conf["mail_address_to"]
+        smtp_server = conf["mail_smtp_server"]
 
         text = "local time: {time_val}\nlogs: {log_val}".format(time_val=str(time.asctime()), log_val=str(response))
         msg = MIMEText(text, 'plain', 'utf-8')
@@ -172,13 +172,13 @@ if __name__ == '__main__':
     """主函数"""
 
     global response
-    config = load_config()
-    schedule_run(config)
-    token = get_token(config)
+    conf = load_conf()
+    schedule_run()
+    token = get_token()
     index = 0
 
-    while index < len(config["seats"]):
-        status, response = post_data(config, token, index)
+    while index < len(conf["seats"]):
+        status, response = post_data(token, index)
         index = index + 1
         time.sleep(random.uniform(0.1, 0.4))
         if status == "success":
@@ -186,4 +186,4 @@ if __name__ == '__main__':
             break
         else:
             print "\n--------------Oops! failed!---------------\n"
-    send_mail(config, response)
+    send_mail(response)
