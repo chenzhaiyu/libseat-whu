@@ -20,8 +20,8 @@ import smtplib
 
 def load_config():
     """导入config.json中的参数"""
-
-    with open("_config.json", 'r') as f:
+    config_path = "config.json"
+    with open(config_path, 'r') as f:
         config = json.loads(f.read())
         # print config
         return config

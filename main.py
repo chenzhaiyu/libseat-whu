@@ -3,10 +3,12 @@
 import functions
 import time
 import random
+from gui import Login
 
 if __name__ == '__main__':
     """主函数"""
 
+    Login()
     config = functions.load_config()
     functions.schedule_run(config)
     token = functions.get_token(config)
@@ -21,4 +23,5 @@ if __name__ == '__main__':
             break
         else:
             print "\n--------------Oops! failed!---------------\n"
+
     functions.send_mail(config, response)

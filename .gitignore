@@ -30,3 +30,9 @@ send-mail.py
 *.json
 .old/post-data.py
 functions.py
+*.pyc
+config.json
+config.json
+*.json
+config.json
+config.json
