@@ -6,7 +6,8 @@
 &nbsp;
 
 ### 说明：
-合理进行测试，请勿给他人和自己造成不便。
+- 合理进行测试，请勿给他人和自己造成不便；
+- GUI还没有适配好。
 
 &nbsp;
 
@@ -15,6 +16,12 @@
 - `conf.json`：`参数配置`
 - `functions.py`：`函数实现`
 - `gui.py`：`还没有完成的GUI界面`
+
+&nbsp;
+
+### 界面：
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-1.png?raw=true)
+
 
 &nbsp;
 
@@ -44,6 +51,7 @@
 
 ### 注意事项：
 - 通过模拟监听到的Android端自习助手的http请求进行操作；
+- GUI还没有写好，但不影响运行；
 - 以一种愚蠢的方式实现了定时预约，通过监控当前时间与设定的触发时间比较（time.sleep），能在Linux/macOS下设置定时任务的略过；
 - 项目使用Python 2.7版本编写，若需要在Python 3.x版本运行，可能需要改几个包函数<如`httplib`改成`http.client`>；
 - 目前只能实现预约座位功能，后面有时间的话会拓展取消预约、释放座位、查询预约等功能；

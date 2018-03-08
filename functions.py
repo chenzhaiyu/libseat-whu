@@ -81,13 +81,13 @@ def post_data(config, token, index):
     # POST到服务器的参数如下
     token_pure = token
     startTime = config["startTime"]
-    endTIme = config["endTime"]
+    endTime = config["endTime"]
     date = get_date(config["date_flag"])
     seats = config["seats"]
     seat = seats[index]
 
     # token_data由纯token值添加起止时间和日期参数构成
-    token_data = {"token": token_pure, "startTime": startTime, "endTime": endTIme, "seat": seat, "date": date}
+    token_data = {"token": str(token_pure), "startTime": str(startTime), "endTime": str(endTime), "seat": str(seat), "date": str(date)}
     token = urllib.urlencode(token_data)
     # print "token-to-send: " + token + "\n"
 
@@ -129,8 +129,11 @@ def schedule_run(config):
         # 当在设定时间前1小时前区间，休眠1h/次
         elif hour_now < int(schedule_time[0]) - 1:
             time.sleep(3600)
-        # 当在设定时间前1小时内区间，休眠1min/次
-        elif minute_now < int(schedule_time[1]) - 1:
+        # 当在设定时间前1小时至前15分钟区间，休眠10min/次
+        elif hour_now == int(schedule_time[0]) - 1:
+            time.sleep(600)
+        # 当在设定时间前15分钟内区间，休眠1min/次
+        elif hour_now == int(schedule_time[0]) and minute_now < int(schedule_time[1]) - 1:
             time.sleep(60)
 
 
