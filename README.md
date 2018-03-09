@@ -7,21 +7,32 @@
 
 ### 说明：
 - 合理进行测试，请勿给他人和自己造成不便；
-- GUI还没有适配好。
+- GUI界面还在完善中。
 
 &nbsp;
 
 ### 项目文件：
-- `main.py`：`* 主函数 *`
+- `gui.py`：`* GUI界面，通过窗口界面选座 *`
+- `run.py`：`主函数，以config.json中缺省参数运行`
 - `conf.json`：`参数配置`
 - `functions.py`：`函数实现`
-- `gui.py`：`还没有完成的GUI界面`
 
 &nbsp;
 
-### 界面：
+### 运行方式：
+`GUI界面模式（推荐）`：
+
+ ```
+ python gui.py
+ ```
+  
 ![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-1.png?raw=true)
 
+`缺省模式（不推荐）`：
+
+```
+python run.py
+```
 
 &nbsp;
 

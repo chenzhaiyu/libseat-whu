@@ -20,7 +20,7 @@ import smtplib
 
 def load_config():
     """导入config.json中的参数"""
-    config_path = "config.json"
+    config_path = "_config.json"
     with open(config_path, 'r') as f:
         config = json.loads(f.read())
         # print config
@@ -89,7 +89,6 @@ def post_data(config, token, index):
     # token_data由纯token值添加起止时间和日期参数构成
     token_data = {"token": str(token_pure), "startTime": str(startTime), "endTime": str(endTime), "seat": str(seat), "date": str(date)}
     token = urllib.urlencode(token_data)
-    # print "token-to-send: " + token + "\n"
 
     connection = httplib.HTTPConnection("seat.lib.whu.edu.cn")
 

@@ -3,7 +3,7 @@
   "password": "15xxxx",
   "startTime": "800",
   "endTime": "990",
-  "date_flag": "tomorrow",
+  "date_flag": "today",
   "schedule_flag": "1",
   "schedule_time": ["22", "15", "1"],
   "seats": ["9400"],
