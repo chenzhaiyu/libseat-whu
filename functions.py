@@ -18,9 +18,8 @@ import smtplib
 # @ website: http://www.chenzhaiyu.com
 
 
-def load_config():
+def load_config(config_path="config.json"):
     """导入config.json中的参数"""
-    config_path = "_config.json"
     with open(config_path, 'r') as f:
         config = json.loads(f.read())
         # print config
@@ -68,8 +67,13 @@ def get_token(config):
     print "Headers info(get-token): \n" + str(headers_received) + "\n"
     print "Response info(get-token): \n" + response + "\n"
     # json.load() -> type: dict
-    token = json.loads(response)["data"]["token"]
-    return token
+
+    if json.loads(response)["data"]:
+        token = json.loads(response)["data"]["token"]
+        return token, response
+    else:
+        token = None
+        return token, response
     # print token
 
 

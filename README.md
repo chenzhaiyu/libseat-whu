@@ -20,15 +20,15 @@
 &nbsp;
 
 ### 运行方式：
-`GUI界面模式（推荐）`：
+- `GUI界面模式（推荐）`：
 
  ```
  python gui.py
  ```
   
-![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-1.png?raw=true)
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-2.png?raw=true)
 
-`缺省模式（不推荐）`：
+- `缺省模式（不推荐）`：
 
 ```
 python run.py
@@ -56,7 +56,9 @@ python run.py
 
 }
 
-注意：每一处的引号都不要拿掉!
+注意：
+每一处的引号都不要拿掉；
+使用GUI模式时，以上参数直接在GUI窗口中选择即可。
 ```
 &nbsp;
 
