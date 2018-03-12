@@ -7,7 +7,7 @@
 
 ### 说明：
 - 合理进行测试，请勿给他人和自己造成不便；
-- GUI界面还在完善中。
+- GUI界面还在完善中，默认会选座到信息分馆云桌面，可以改`config.json`中的`seats`参数以选其他座位，由于后台座位编号与实际座位号没有明确对应关系，后面再慢慢适配咯。
 
 &nbsp;
 
@@ -26,7 +26,7 @@
  python gui.py
  ```
   
-![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-2.png?raw=true)
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-3.png?raw=true)
 
 - `缺省模式（不推荐）`：
 

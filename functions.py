@@ -28,7 +28,6 @@ def load_config(config_path="config.json"):
 
 def get_date(flag="tomorrow"):
     """获取当前日期，预定次日或今日座位"""
-
     localtime = datetime.datetime.now()
     if flag == "tomorrow":
         delta = datetime.timedelta(days=1)
@@ -41,7 +40,6 @@ def get_date(flag="tomorrow"):
 
 def get_token(config):
     """获取token值来授权登录, 使用HTTP GET方法"""
-
     # url = "http://seat.lib.whu.edu.cn/rest/auth?username=2015xxxxxxxxx&password=15xxxx"
     url = "http://seat.lib.whu.edu.cn/rest/auth?username=" + str(config["username"]) + "&" + "password=" + str(
         config["password"])
@@ -79,7 +77,6 @@ def get_token(config):
 
 def post_data(config, token, index):
     """预定座位，通过选定座位号/时间/日期等，使用HTTP POST方法"""
-
     url = "http://seat.lib.whu.edu.cn/rest/v2/freeBook"
 
     # POST到服务器的参数如下
@@ -113,7 +110,6 @@ def post_data(config, token, index):
 
 def schedule_run(config):
     """定时执行，通过监控当前时间与设定的触发时间比较，实现得很笨拙，在Linux/macOS下能设置定时任务的略过"""
-
     schedule_flag = config["schedule_flag"]
     schedule_time = config["schedule_time"]
     # 非定时执行模式
@@ -142,7 +138,6 @@ def schedule_run(config):
 
 def _format_address(s):
     """格式化邮件地址"""
-
     name, address = parseaddr(s)
     return formataddr((
         Header(name, 'utf-8').encode(),
@@ -151,7 +146,6 @@ def _format_address(s):
 
 def send_mail(config, response):
     """用SMTP方式发送日志邮件，告知选座情况"""
-
     if config["send_mail_flag"] == "0":
         pass
 
@@ -176,7 +170,6 @@ def send_mail(config, response):
 
 if __name__ == '__main__':
     """主函数"""
-
     global response
     config = load_config()
     schedule_run(config)
