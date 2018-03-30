@@ -10,6 +10,7 @@ from email.header import Header
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 import smtplib
+import requests
 
 
 # @ whu图书馆座位预约程序
@@ -40,8 +41,7 @@ def get_date(flag="tomorrow"):
 
 def get_token(config):
     """获取token值来授权登录, 使用HTTP GET方法"""
-    # url = "http://seat.lib.whu.edu.cn/rest/auth?username=2015xxxxxxxxx&password=15xxxx"
-    url = "http://seat.lib.whu.edu.cn/rest/auth?username=" + str(config["username"]) + "&" + "password=" + str(
+    login_url = "https://seat.lib.whu.edu.cn/rest/auth?username=" + str(config["username"]) + "&" + "password=" + str(
         config["password"])
     connection = httplib.HTTPConnection("seat.lib.whu.edu.cn")
 
@@ -57,7 +57,7 @@ def get_token(config):
         }
 
     # 使用HTTP GET方法
-    request = connection.request(method="GET", url=url, headers=headers_to_send)
+    request = connection.request(method="GET", url=login_url, headers=headers_to_send)
     response = connection.getresponse()
     headers_received = response.getheaders()
     response = response.read()
@@ -75,37 +75,90 @@ def get_token(config):
     # print token
 
 
-def post_data(config, token, index):
+def get_info(token):
+    info_url = "https://seat.lib.whu.edu.cn:8443/rest/v2/user"
+    connection = httplib.HTTPConnection("seat.lib.whu.edu.cn")
+    headers_to_send = {'Host': 'seat.lib.whu.edu.cn:8443', 'Accept-Language': 'zh-cn',
+                       'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*',
+                       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Connection': 'keep-alive',
+                       'token': str(token), 'User-Agent': 'doSingle/11 CFNetwork/893.14.2 Darwin/17.3.0'}
+    request = connection.request(method="GET", url=info_url, headers=headers_to_send)
+    response = connection.getresponse().read()
+    #print "Response info(get-info): \n" + response + "\n"
+    info_json = json.loads(response)["data"]
+    if info_json:
+        return info_json
+    else:
+        pass
+
+
+def post_data(seats ,config, token, index):
     """预定座位，通过选定座位号/时间/日期等，使用HTTP POST方法"""
-    url = "http://seat.lib.whu.edu.cn/rest/v2/freeBook"
+    reserve_url = "https://seat.lib.whu.edu.cn:8443/rest/v2/freeBook"
 
     # POST到服务器的参数如下
     token_pure = token
     startTime = config["startTime"]
     endTime = config["endTime"]
     date = get_date(config["date_flag"])
-    seats = config["seats"]
-    seat = seats[index]
+    test = seats.values()
+    seat = seats.values()[index]
 
     # token_data由纯token值添加起止时间和日期参数构成
-    token_data = {"token": str(token_pure), "startTime": str(startTime), "endTime": str(endTime), "seat": str(seat), "date": str(date)}
+    token_data = {"startTime": str(startTime), "endTime": str(endTime), "seat": int(seat), "date": str(date), "t": "1", "t2": "2"}
     token = urllib.urlencode(token_data)
 
     connection = httplib.HTTPConnection("seat.lib.whu.edu.cn")
 
     # 构造POST阶段的HTTP headers
-    headers_to_send = {"Connection": "Keep-alive", "Content-Length": "76",
-                       "Content-Type": "application/x-www-form-urlencoded"}
+    headers_to_send = {'Host': 'seat.lib.whu.edu.cn:8443', 'Accept-Language': 'zh-cn', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Connection': 'keep-alive', 'token': str(token_pure), 'User-Agent': 'doSingle/11 CFNetwork/893.14.2 Darwin/17.3.0'}
+    """
+    # 似乎不对的POST方式
     # 使用HTTP POST方法
-    request = connection.request(method="POST", url=url, body=str(token), headers=headers_to_send)
-    response = connection.getresponse()
-    headers_received = response.getheaders()
-    response = response.read()
+    # request = connection.request(method="POST", url=url, body=str(token), headers=headers_to_send)
+    # response = connection.getresponse()
+    # headers_received = response.getheaders()
+    # response = response.read()
+    
 
     print "Headers info(post-data): \n" + str(headers_received) + "\n"
     print "Response info(post-data): \n" + str(response)
     status = json.loads(response)["status"]
     return status, response
+    """
+
+    # 新的POST方式
+    response = requests.post(url=reserve_url, headers=headers_to_send, data=token_data, verify=False)
+    response_json = response.json()
+    msg = json.dumps(response_json).decode('unicode-escape')
+    print msg
+    if response_json[u"message"] == u'\u5df2\u67091\u4e2a\u6709\u6548\u9884\u7ea6\uff0c\u8bf7\u5728\u4f7f\u7528\u7ed3\u675f\u540e\u518d\u6b21\u8fdb\u884c\u9009\u62e9':
+        return "已有预约", "已有预约"
+    return response_json["status"], msg
+
+
+# 搜索指定时间和房间内的座位
+# TODO: 全都是可用座位吗？
+def search_seats(token, room, date):
+    """根据房间号和时间返回座位号"""
+    search_url = "https://seat.lib.whu.edu.cn:8443/rest/v2/room/layoutByDate/" + room + "/" + date
+
+    headers_to_send = {'Host': 'seat.lib.whu.edu.cn:8443', 'Accept-Language': 'zh-cn',
+                       'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*',
+                       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Connection': 'keep-alive',
+                       'token': str(token), 'User-Agent': 'doSingle/11 CFNetwork/893.14.2 Darwin/17.3.0'}
+    response = requests.get(search_url, headers=headers_to_send, verify=False)
+    json = response.json()
+    print(json['status'])
+    if json['status'] == 'success':
+        allSeats = {}
+        for seat in json['data']['layout']:
+            if json['data']['layout'][seat]['type'] == 'seat':
+                allSeats[json['data']['layout'][seat]['name']] = str(json['data']['layout'][seat]['id'])
+        return allSeats
+    else:
+        print(json)
+        return False
 
 
 def schedule_run(config):
@@ -123,6 +176,10 @@ def schedule_run(config):
         hour_now = datetime.datetime.now().hour
         minute_now = datetime.datetime.now().minute
         second_now = datetime.datetime.now().second
+        if hour_now > int(schedule_time[0]):
+            break
+        if hour_now >= int(schedule_time[0]) and minute_now >= int(schedule_time[1]):
+            break
         if hour_now >= int(schedule_time[0]) and minute_now >= int(schedule_time[1]) and second_now >= int(schedule_time[2]):
             break
         # 当在设定时间前1小时前区间，休眠1h/次

@@ -12,9 +12,13 @@ def run(config):
     token, login_response = functions.get_token(config)
 
     if token:
+        info = functions.get_info(token)
         index = 0
-        while index < len(config["seats"]):
-            status, response = functions.post_data(config, token, index)
+        date = functions.get_date("today")
+        seats = functions.search_seats(token, config["room"], date)
+
+        while seats is not False and index < len(seats):
+            status, response = functions.post_data(seats, config, token, index)
             index = index + 1
             time.sleep(random.uniform(0.1, 0.4))
             if status == "success":
@@ -29,7 +33,7 @@ def run(config):
         status = "fail"
         response = login_response
 
-    return status, response
+    return info, status, response
 
 
 if __name__ == '__main__':

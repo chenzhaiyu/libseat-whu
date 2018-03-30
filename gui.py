@@ -1,14 +1,15 @@
 # !/usr/bin/python
 # -*- coding: UTF-8 -*-
 
+import json
+import ttk
 from Tkinter import *
 from tkFont import Font
 from tkMessageBox import *
-import json
-import ttk
-from functions import load_config
-import run
+from ScrolledText import ScrolledText
 
+import run
+from functions import load_config
 
 config_path = "_config.json"
 
@@ -108,8 +109,8 @@ class GUI(object):
         self.endTime_chosen.current(0)  # 设置下拉列表默认显示的值, 0为numberChosen['values']的下标值
 
         # 信息栏Text
-        self.info = Text(self.root, height=8, width=30, state="normal")
-        self.info.grid(column=4, row=0, rowspan=4, padx=5)
+        self.info = ScrolledText(self.root, height=8, width=30, state="normal")
+        self.info.grid(column=4, row=0, rowspan=4, padx=3)
         self.info.insert(END, "Runtime Info:\n\n")
         self.info.insert(END, "[22:15-23:50可预约明日座位]\n\n")
         self.info.insert(END, "[场馆/楼层/房间暂未适配好，执行选座会默认选座到信息分馆云桌面]\n\n")
@@ -125,7 +126,7 @@ class GUI(object):
 
         # 楼层下拉列表
         self.floor = StringVar()
-        self.cbb_floor = ttk.Combobox(self.root, width=10, textvariable=self.floor, state='readonly')
+        self.cbb_floor = ttk.Combobox(self.root, width=10, textvariable=self.floor, state='disabled')
         self.cbb_floor['values'] = ("一楼", "二楼", "三楼", "四楼")  # 设置下拉列表的值
         self.cbb_floor.bind('<<ComboboxSelected>>', self.cbb_floor_selected)  # 绑定虚拟事件：cbb选值
         self.cbb_floor.grid(column=3, row=1, padx=3)  # 设置其在界面中出现的位置, column代表列, row 代表行
@@ -142,11 +143,11 @@ class GUI(object):
 
         # 座位下拉列表
         self.seat = StringVar()
-        self.cbb_seat = ttk.Combobox(self.root, width=10, textvariable=self.seat, state='readonly')
+        self.cbb_seat = ttk.Combobox(self.root, width=10, textvariable=self.seat, state='disabled')
         # TODO: 用户可能使用缺省的分馆和楼层和房间（没有cbb_floor_selected虚拟事件），缺省的房间必须对应缺省分馆，缺省楼层和缺省房间
         self.cbb_seat['values'] = ["%03d" % i for i in range(1, 21)]  # 设置下拉列表的值
         self.cbb_seat.grid(column=3, row=3, padx=3)  # 设置其在界面中出现的位置, column代表列, row 代表行
-        self.cbb_seat.current(0)  # 设置下拉列表默认显示的值, 0为numberChosen['values']的下标值
+        #self.cbb_seat.current(0)  # 设置下拉列表默认显示的值, 0为numberChosen['values']的下标值
 
         # 关于栏Text
         # TODO: 关于栏显示程序信息
@@ -161,12 +162,11 @@ class GUI(object):
         lb_logo = Label(self.root, image=logo, height=130)
         lb_logo.grid(row=0, column=5, rowspan=4, padx=1)
 
-
         self.root.mainloop()
 
     def cbb_lib_selected(self, event):
         """选定cbb_lib时触发函数"""
-        # TODO: 除信息分馆歪，其他馆还没适配
+        # TODO: 除信息分馆外，其他馆还没适配
         if self.lib.get() == u"信息分馆":
             self.cbb_floor['values'] = ["一楼", "二楼", "三楼", "四楼"]
         elif self.lib.get() == u"总馆":
@@ -179,28 +179,30 @@ class GUI(object):
     def cbb_floor_selected(self, event):
         """选定cbb_floor时触发函数"""
         if self.floor.get() == u"一楼":
-            self.cbb_room['values'] = ["双屏电脑", "电子资源阅览区", "3C创客空间", "创新学习讨论区", "MAC电脑", "云桌面"]
+            self.cbb_room['values'] = ["3C创客空间", "创新学习讨论区", "双屏电脑", "MAC电脑", "云桌面"]
+            self.cbb_room.current(0)
         if self.floor.get() == u"二楼":
             self.cbb_room['values'] = ["二楼东", "二楼西"]
+            self.cbb_room.current(0)
         if self.floor.get() == u"三楼":
             self.cbb_room['values'] = ["三楼东", "三楼自主学习区", "三楼西"]
+            self.cbb_room.current(0)
         if self.floor.get() == u"四楼":
             self.cbb_room['values'] = ["四楼东", "四楼西"]
+            self.cbb_room.current(0)
 
     def cbb_room_selected(self, event):
         """选定cbb_floor时触发函数"""
-        if self.room.get() == u"双屏电脑":
-            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 21)]
-        if self.room.get() == u"电子资源阅览区":
-            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 21)]
         if self.room.get() == u"3C创客空间":
-            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 111)]
+            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 21)]
         if self.room.get() == u"创新学习讨论区":
-            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 65)]
+            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 21)]
+        if self.room.get() == u"双屏电脑":
+            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 111)]
         if self.room.get() == u"MAC电脑":
-            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 13)]
+            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 65)]
         if self.room.get() == u"云桌面":
-            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 43)]
+            self.cbb_seat['values'] = ["%03d" % i for i in range(1, 13)]
         if self.room.get() == u"二楼东":
             self.cbb_seat['values'] = ["%03d" % i for i in range(1, 93)]
         if self.room.get() == u"二楼西":
@@ -242,6 +244,19 @@ class GUI(object):
         endTime_value = int(self.endTime.get().split(":")[0]) * 60 + int(self.endTime.get().split(":")[1])
         email_value = str(self.ckb_email_var.get())
         remember_value = str(self.ckb_remember_var.get())
+        # room_value = self.room.get()
+        # TODO: 不是“云桌面”，应该是一个房间号码
+        room_value = "14"
+        if self.room.get() == u"3C创客空间":
+            room_value = "4"
+        elif self.room.get() == u"创新学习讨论区":
+            room_value = "5"
+        elif self.room.get() == u"双屏电脑":
+            room_value = "14"
+        elif self.room.get() == u"MAC电脑":
+            room_value = "15"
+        elif self.room.get() == u"云桌面":
+            room_value = "16"
 
         txt = u'''
         学号:  %s 
@@ -276,6 +291,8 @@ class GUI(object):
                 config_before["startTime"] = str(startTime_value)
                 config_before["endTime"] = str(endTime_value)
                 config_before["send_mail_flag"] = email_value
+                config_before["room"] = room_value
+
                 config_after = config_before
 
             # 打开文件并覆盖写入修改后内容
@@ -283,13 +300,19 @@ class GUI(object):
                 json.dump(config_after, f)
 
             # TODO: 写入info框
+            self.info.focus()
             self.info.insert(END, "------用户设置已保存------\n")
-            self.info.insert(END, "------开始运行主程序------\n")
+            self.info.insert(END, "------开始运行主程序------\n\n")
 
             # 调用 run.py 执行选座流程
-            status, response = run.run(config_after)
-            self.info.insert(END, response)
+            info, status, response = run.run(config_after)
+            self.info.insert(END, json.dumps(info).decode('unicode-escape'))
             self.info.insert(END, "\n")
+            self.info.insert(END, "\n")
+            self.info.see(END)
+            self.info.insert(END, json.dumps(response).decode('unicode-escape'))
+            self.info.insert(END, "\n")
+            self.info.see(END)
 
             # TODO: 以合适的方式结束对话框
             # TODO: showinfo
