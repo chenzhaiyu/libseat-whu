@@ -5,17 +5,12 @@
 ```
 &nbsp;
 
-### 说明：
-- 合理进行测试，请勿给他人和自己造成不便；
-- GUI界面还在完善中，默认会选座到信息分馆云桌面，可以改`config.json`中的`seats`参数以选其他座位，由于后台座位编号与实际座位号没有明确对应关系，后面再慢慢适配咯。
-
-&nbsp;
 
 ### 项目文件：
 - `gui.py`：`* GUI界面，通过窗口界面选座 *`
-- `run.py`：`主函数，以config.json中缺省参数运行`
+- `run.py`：`缺省运行模块`
 - `conf.json`：`参数配置`
-- `functions.py`：`函数实现`
+- `functions.py`：`函数模块`
 
 &nbsp;
 
@@ -25,14 +20,21 @@
  ```
  python gui.py
  ```
-  
-![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-3.png?raw=true)
 
-- `缺省模式（不推荐）`：
+- `缺省模式`：
 
-```
-python run.py
-```
+ ```
+ python run.py
+ ```
+ 
+&nbsp;
+
+### 运行截图：
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-4.png?raw=true)
+
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-6.JPG?raw=true)
+
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-5.png?raw=true)
 
 &nbsp;
 
@@ -46,8 +48,6 @@ python run.py
   "date_flag": 缺省为"tomorrow"，预约次日座位，"today"为预约今日座位，
   "schedule_flag": "1"表示启用预约模式，"0"为禁用，
   "schedule_time": 预约模式时/分/秒设置，
-  "seats": 所选座位号，
-  "more_seats": 暂未适配，不需要配置，
   "send_mail_flag": "1"表示启用邮件提醒，"0"为禁用，
   "mail_address_from": 发件邮箱,
   "mail_password": 发件邮箱密码,
@@ -57,16 +57,14 @@ python run.py
 }
 
 注意：
-每一处的引号都不要拿掉；
+引号都不要拿掉；
 使用GUI模式时，以上参数直接在GUI窗口中选择即可。
 ```
 &nbsp;
 
 ### 注意事项：
+- 合理进行测试，请勿给他人和自己造成不便；
 - 通过模拟监听到的Android端自习助手的http请求进行操作；
-- GUI还没有写好，但不影响运行；
-- 以一种愚蠢的方式实现了定时预约，通过监控当前时间与设定的触发时间比较（time.sleep），能在Linux/macOS下设置定时任务的略过；
-- 项目使用Python 2.7版本编写，若需要在Python 3.x版本运行，可能需要改几个包函数<如`httplib`改成`http.client`>；
-- 目前只能实现预约座位功能，后面有时间的话会拓展取消预约、释放座位、查询预约等功能；
-- 若在测试中存在问题，请与我联系，邮箱：`contact@chenzhaiyu.com`，个人网站：`http://www.chenzhaiyu.com`。
+- 目前只能选择信息分馆的座位（懒）；
+- 写得很烂，若在测试中发现问题，可联系：`contact@chenzhaiyu.com`。
 
