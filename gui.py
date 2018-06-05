@@ -62,7 +62,7 @@ class GUI(object):
         # 启用邮件通知checkbutton
         self.checkbutton_email_var = IntVar()
         self.checkbutton_email = Checkbutton(self.root, text=u'启用邮件通知', underline=0, variable=self.checkbutton_email_var)
-        self.checkbutton_email.select()
+        self.checkbutton_email.deselect()
         self.checkbutton_email.grid(row=3, column=1)
 
         # 确定按钮
