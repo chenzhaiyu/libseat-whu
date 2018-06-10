@@ -11,7 +11,7 @@ from tkMessageBox import *
 import run
 from functions import load_config
 
-config_path = "_config.json"
+config_path = "config.json"
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
