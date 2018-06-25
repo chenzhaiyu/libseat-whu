@@ -89,8 +89,8 @@ def get_user_info(token):
     request = connection.request(method="GET", url=info_url, headers=headers_to_send)
     response = connection.getresponse().read()
     #print "Response info(get-info): \n" + response + "\n"
-    info_json = json.loads(response)["data"]
-    userinfo = json.dumps(info_json).decode('unicode-escape')
+    userinfo = json.loads(response)["data"]
+    # userinfo = json.dumps(info_json).decode('unicode-escape')
     if userinfo:
         return userinfo
     else:
@@ -135,15 +135,17 @@ def post_data(seats ,config, token, index):
     # 新的POST方式
     response = requests.post(url=reserve_url, headers=headers_to_send, data=token_data, verify=False)
     response_json = response.json()
-    msg = json.dumps(response_json).decode('unicode-escape')
-    print msg
-    if response_json[u"message"] == u'\u5df2\u67091\u4e2a\u6709\u6548\u9884\u7ea6\uff0c\u8bf7\u5728\u4f7f\u7528\u7ed3\u675f\u540e\u518d\u6b21\u8fdb\u884c\u9009\u62e9':
-        return "已有预约", "已有预约"
-    if response_json[u"message"] == u'\u7cfb\u7edf\u53ef\u9884\u7ea6\u65f6\u95f4\u4e3a 01:00 ~ 21:30':
-        return "时间非法", "时间非法"
-    if response_json[u'message'] == u'\u53c2\u6570\u9519\u8bef':
-        return "参数错误", "参数错误"
-    return response_json["status"], str(msg)
+
+    # msg = json.dumps(response_json).decode('unicode-escape')
+    # print msg
+    # if response_json[u"message"] == u'\u5df2\u67091\u4e2a\u6709\u6548\u9884\u7ea6\uff0c\u8bf7\u5728\u4f7f\u7528\u7ed3\u675f\u540e\u518d\u6b21\u8fdb\u884c\u9009\u62e9':
+    #     return "已有预约", "已有预约"
+    # if response_json[u"message"] == u'\u7cfb\u7edf\u53ef\u9884\u7ea6\u65f6\u95f4\u4e3a 01:00 ~ 21:30':
+    #     return "时间非法", "时间非法"
+    # if response_json[u'message'] == u'\u53c2\u6570\u9519\u8bef':
+    #     return "参数错误", "参数错误"
+
+    return response_json
 
 
 # 搜索指定时间和房间内的座位
@@ -222,7 +224,7 @@ def send_mail(config, response):
         address_to = config["mail_address_to"]
         smtp_server = config["mail_smtp_server"]
 
-        text = "local time: {time_val}\nlogs: {log_val}".format(time_val=str(time.asctime()), log_val=response)
+        text = "local time: {time_val}\nlogs: {log_val}".format(time_val=str(time.asctime()), log_val=str(response))
         msg = MIMEText(text, 'plain', 'utf-8')
         msg['From'] = _format_address(u'localhost <%s>' % address_from)
         msg['To'] = _format_address(u'anybody <%s>' % address_to)

@@ -291,7 +291,7 @@ class GUI(object):
             # self.root.withdraw()
             # 调用 run.py 执行选座流程！
             # time.sleep(10)
-            userinfo, status, response = run.run(config_after)
+            userinfo, response = run.run(config_after)
             # self.info.insert(END, json.dumps(info).decode('unicode-escape'))
             # self.info.insert(END, "\n")
             # self.info.insert(END, "\n")
@@ -299,8 +299,44 @@ class GUI(object):
             # self.info.insert(END, json.dumps(response).decode('unicode-escape'))
             # self.info.insert(END, "\n")
             # self.info.see(END)
-            info = str(userinfo) + '\n\n' + str(status) + '\n\n' + str(response)
-            showinfo('座位预约结果', info)
+
+            # message = str(userinfo) + '\n\n' + str(status) + '\n\n' + str(response)
+
+            username = userinfo[u"username"]
+            name = userinfo[u"name"]
+            lastLogin = userinfo[u"lastLogin"]
+            violationCount = userinfo["violationCount"]
+
+            message = ''
+
+            status = "失败" if response[u"status"] == u"fail" else "成功"
+            if response[u"data"] is None:
+                detail = response[u"message"]
+
+                message = "姓        名：" + str(name) + "\n" + \
+                          "学        号：" + str(username) + "\n" + \
+                          "上次入馆：" + str(lastLogin) + "\n" + \
+                          "违约次数：" + str(violationCount) + "\n\n" + \
+                          "预约状态：" + str(status) + "\n" + \
+                          "详细信息：" + str(detail) + "\n"
+
+            # 预约成功的情况
+            else:
+                location = response[u"data"][u"location"]
+                begin = response[u'data'][u'begin']
+                end = response[u'data'][u'end']
+                onDate = response[u'data'][u'onDate']
+
+                message = "姓        名：" + str(name) + "\n" + \
+                          "学        号：" + str(username) + "\n" + \
+                          "上次入馆：" + str(lastLogin) + "\n" + \
+                          "违约次数：" + str(violationCount) + "\n\n" + \
+                          "预约状态：" + str(status) + "\n" + \
+                          "预约日期：" + str(onDate) + "\n" + \
+                          "起止时间：" + str(begin) + " ~ " + str(end) + "\n" + \
+                          "座位信息：" + str(location) + "\n"
+
+            showinfo('座位预约结果', message)
             # TODO: 以合适的方式结束对话框
             # TODO: showinfo
             self.root.destroy()

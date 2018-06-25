@@ -32,9 +32,9 @@
 ### 运行截图：
 ![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-4.png?raw=true)
 
-![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-6.JPG?raw=true)
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-7.png?raw=true)
 
-![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-5.png?raw=true)
+![Alt text](https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-6.JPG?raw=true)
 
 &nbsp;
 
