@@ -6,7 +6,6 @@ import random
 
 
 def run(config):
-    """主函数，调用 function.py 的函数"""
     # TODO: 减少对 config.json 的调用次数，导入一次就够了
     functions.schedule_run(config)
     token, login_response = functions.get_token(config)

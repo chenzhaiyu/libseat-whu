@@ -24,11 +24,11 @@
 
 ### 运行截图：
 <div style="align: center">
-<img src="https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-4.png?raw=true" width="600"/>
+<img src="https://github.com/realczy/ResourceImages/blob/master/res/whu-lib-seat-4.png?raw=true" width="600"/>
 </div>
 
 <div style="align: center">
-<img src="https://github.com/realczy/markdown-photo/blob/master/res/whu-lib-seat-7.png?raw=true" width="620"/>
+<img src="https://github.com/realczy/ResourceImages/blob/master/res/whu-lib-seat-7.png?raw=true" width="620"/>
 </div>
 
 &nbsp;

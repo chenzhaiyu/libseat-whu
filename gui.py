@@ -18,7 +18,6 @@ sys.setdefaultencoding('utf-8')
 
 
 class GUI(object):
-    """GUI对象"""
     def __init__(self):
         self.root = Tk()
         # self.after = Tk()
@@ -208,7 +207,7 @@ class GUI(object):
             eval(en).config(show='*')
 
     def process_func(self):
-        """GUI部分的主函数，允许用户在窗口修改 config.json 的参数，并调用 run.py 执行选座"""
+        """允许用户在窗口修改 config.json 的参数，并调用 run.py 执行选座"""
         # TODO: 改混乱的变量名
         value_username = self.entry_username.get().strip()
         value_password = self.entry_password.get().strip()
@@ -283,24 +282,9 @@ class GUI(object):
             with open(config_path, 'w') as f:
                 json.dump(config_after, f)
 
-            # TODO: 写入info框
-            # self.info.focus()
-            # self.info.insert(END, "------用户设置已保存------\n")
-            # self.info.insert(END, "------开始运行主程序------\n\n")
             self.root.iconify() # 把主窗口藏起来，先不destroy()，因为后面还要showinfo()
-            # self.root.withdraw()
-            # 调用 run.py 执行选座流程！
-            # time.sleep(10)
-            userinfo, response = run.run(config_after)
-            # self.info.insert(END, json.dumps(info).decode('unicode-escape'))
-            # self.info.insert(END, "\n")
-            # self.info.insert(END, "\n")
-            # self.info.see(END)
-            # self.info.insert(END, json.dumps(response).decode('unicode-escape'))
-            # self.info.insert(END, "\n")
-            # self.info.see(END)
 
-            # message = str(userinfo) + '\n\n' + str(status) + '\n\n' + str(response)
+            userinfo, response = run.run(config_after)
 
             username = userinfo[u"username"]
             name = userinfo[u"name"]

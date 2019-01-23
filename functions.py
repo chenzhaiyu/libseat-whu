@@ -16,11 +16,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-
 # @ whu图书馆座位预约程序
 # @ author:  czy
-# @ email:   contact@chenzhaiyu.com
-# @ website: http://www.chenzhaiyu.com
 
 
 def load_config(config_path="config.json"):
@@ -117,33 +114,11 @@ def post_data(seats ,config, token, index):
 
     # 构造POST阶段的HTTP headers
     headers_to_send = {'Host': 'seat.lib.whu.edu.cn:8443', 'Accept-Language': 'zh-cn', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'Connection': 'keep-alive', 'token': str(token_pure), 'User-Agent': 'doSingle/11 CFNetwork/893.14.2 Darwin/17.3.0'}
-    """
-    # 似乎不对的POST方式
-    # 使用HTTP POST方法
-    # request = connection.request(method="POST", url=url, body=str(token), headers=headers_to_send)
-    # response = connection.getresponse()
-    # headers_received = response.getheaders()
-    # response = response.read()
-    
 
-    print "Headers info(post-data): \n" + str(headers_received) + "\n"
-    print "Response info(post-data): \n" + str(response)
-    status = json.loads(response)["status"]
-    return status, response
-    """
 
     # 新的POST方式
     response = requests.post(url=reserve_url, headers=headers_to_send, data=token_data, verify=False)
     response_json = response.json()
-
-    # msg = json.dumps(response_json).decode('unicode-escape')
-    # print msg
-    # if response_json[u"message"] == u'\u5df2\u67091\u4e2a\u6709\u6548\u9884\u7ea6\uff0c\u8bf7\u5728\u4f7f\u7528\u7ed3\u675f\u540e\u518d\u6b21\u8fdb\u884c\u9009\u62e9':
-    #     return "已有预约", "已有预约"
-    # if response_json[u"message"] == u'\u7cfb\u7edf\u53ef\u9884\u7ea6\u65f6\u95f4\u4e3a 01:00 ~ 21:30':
-    #     return "时间非法", "时间非法"
-    # if response_json[u'message'] == u'\u53c2\u6570\u9519\u8bef':
-    #     return "参数错误", "参数错误"
 
     return response_json
 
@@ -214,7 +189,7 @@ def _format_address(s):
 
 
 def send_mail(config, response):
-    """用SMTP方式发送日志邮件，告知选座情况"""
+    """发送日志邮件，告知选座情况"""
     if config["send_mail_flag"] == "0":
         pass
 
@@ -238,7 +213,6 @@ def send_mail(config, response):
 
 
 if __name__ == '__main__':
-    """主函数"""
     global response
     config = load_config()
     schedule_run(config)
